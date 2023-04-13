@@ -1,14 +1,18 @@
 <?php
 // require_once("init.php");
 
+$conn = mysqli_connect('localhost', 'root', '', 'amskier');
+if(!$conn){
+	die("Connection failed!");
+}
 //mysql_connect('localhost','websql','hawley1');
 //mysql_select_db('Pais');
 // $mysql = new mysqli("localhost","websql","hawley1","Pais");
 
-$show_debug = 0;
-if ($_SERVER["REMOTE_ADDR"] == "207.237.37.190") {
-	$show_debug = 1;
-}
+// $show_debug = 0;
+// if ($_SERVER["REMOTE_ADDR"] == "207.237.37.190") {
+// 	$show_debug = 1;
+// }
 
 $formdata = array();
 $isUpdate = false;
@@ -17,28 +21,31 @@ $formdata['bandaid2'] = -1;
 $formdata['bandaid3'] = -1;
 $formdata['bandaid4'] = -1;
 
+
 $bodyPartSide = array('Left','Right','N/A');
 
-if (isset($_GET['update']) && !empty($_GET['update'])) {
-	//mysql_connect('localhost','websql','hawley1');
-	//mysql_select_db('Pais');
-	$update = addslashes($_GET['update']);
-	$query = "SELECT * FROM dbo_ClaimsWC WHERE ClaimsWCID='$update'";
-	$result = $mysql->query($query);
+// if (isset($_GET['update']) && !empty($_GET['update'])) {
+	// mysql_connect('localhost','websql','hawley1');
+	// mysql_select_db('Pais');
+	$conn = mysqli_connect('localhost', 'root', '', 'amskier');
+	// $update = addslashes($_GET['update']);
+	// $query = "SELECT * FROM dbo_ClaimsWC WHERE ClaimsWCID='$update'";
+	$query = "SELECT * FROM dbo_ClaimsWC";
+	$result = $conn->query($query);
 	if ($result->num_rows > 0) {
 		$row = $result->fetch_object();
-		if ($row->AccID == $_SESSION['AMSKIER']['authAccId']) {
+		// if ($row->AccID == $_SESSION['AMSKIER']['authAccId']) {
 			$isUpdate = true;
 			$updateRow = $row;
 			$formdata['campName'] = $row->CampName;
-			if (empty($row->CampName)) {
-				$formdata['campName'] = $_SESSION['AMSKIER']['campName'];
-			}
-			$formdata['campLocation'] = $row->CampLocationID;
-			if (empty($row->CampLocationID)) {
-				$lid = $_SESSION['AMSKIER']['campLocationID'];
-				$formdata['campLocation'] = $_SESSION['AMSKIER']['locations'][$lid];
-			}
+			// if (empty($row->CampName)) {
+			// 	$formdata['campName'] = $_SESSION['AMSKIER']['campName'];
+			// }
+			// $formdata['campLocation'] = $row->CampLocationID;
+			// if (empty($row->CampLocationID)) {
+			// 	$lid = $_SESSION['AMSKIER']['campLocationID'];
+			// 	$formdata['campLocation'] = $_SESSION['AMSKIER']['locations'][$lid];
+			// }
 			$formdata['firstName'] = $row->EEFirstName;
 			$formdata['lastName'] = $row->EELastName;
 			$formdata['jobTitle'] = $row->EEJob;
@@ -112,9 +119,9 @@ if (isset($_GET['update']) && !empty($_GET['update'])) {
 			$formdata['severity'] = $row->Severity;
 			$formdata['Featured'] = $row->Featured;
 			$formdata['ReportOnly'] = $row->ReportOnly;
-		}
+		// }
 	}
-}
+// }
 // else {
 // 	$formdata['campName'] = $_SESSION['AMSKIER']['campName'];
 // 	$lid = $_SESSION['AMSKIER']['campLocationID'];
@@ -170,8 +177,9 @@ if (isset($_GET['update']) && !empty($_GET['update'])) {
 }      
 </style>
 
-<script type="text/javascript" src="../includes/jquery.min.js"></script>
-<script type="text/javascript" src="../includes/jquery-ui.min.js"></script>
+<!-- <script type="text/javascript" src="../includes/jquery.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js" integrity="sha512-57oZ/vW8ANMjR/KQ6Be9v/+/h6bq9/l3f0Oc7vn6qMqyhvPd1cvKBRWWpzu0QoneImqr2SkmO4MSqU+RpHom3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- <script type="text/javascript" src="../includes/jquery-ui.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script type="text/javascript" src="../includes/amskier.js"></script>
 <script type="text/javascript">
@@ -290,7 +298,7 @@ function goDashboard() {
 				</div>
 				<div class="col-lg-12">
 					<div class="form-group col-lg-12">
-						<div class="col-lg-12 page-title" style="text-align: center; margin-top: 50px; color: #7089a4">Injured Person's Information</div>
+						<div class="col-lg-12 page-title" style="text-align: center; margin-top: 50px; color: #7089a4">INJURED PERSON'S INFORMATION</div>
 						<button class="hideMeButton">Expand</button>
 					</div>
 				</div>
@@ -799,7 +807,7 @@ function goDashboard() {
 		</div>
 	</div>
 </div>
-<div id="debug"></div>
+<!-- <div id="debug"></div> -->
 
 <!-- <?php include("../includes/amskier-footer.php"); ?> -->
 
