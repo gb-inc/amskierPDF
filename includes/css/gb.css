@@ -1,0 +1,52 @@
+
+.buttonContainer {
+    display: inline;
+}
+
+#hideInjured {
+    font-size: 1rem;
+}
+
+#hideAccident {
+    font-size: 1rem;
+}
+
+#hideInjury {
+    font-size: 1rem;
+}
+#hideEmployment {
+    font-size: 1rem;
+}
+#hideInjured:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+#hideInjury:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+#hideEmployment:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+#hideAccident:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+.injuredPerson {
+    display: none;
+}
+.accident {
+    display: none;
+}
+.injury {
+    display: none;
+}
+.employment {
+    display: none;
+}
+
+#gbNavBar {
+    display: flex;
+    justify-content: center;
+}

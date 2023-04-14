@@ -1,18 +1,18 @@
 <?php
-// require_once("init.php");
+require_once("init.php");
 
-$conn = mysqli_connect('localhost', 'root', '', 'amskier');
-if(!$conn){
-	die("Connection failed!");
-}
+// $conn = mysqli_connect('localhost', 'root', '', 'amskier');
+// if(!$conn){
+// 	die("Connection failed!");
+// }
 //mysql_connect('localhost','websql','hawley1');
 //mysql_select_db('Pais');
-// $mysql = new mysqli("localhost","websql","hawley1","Pais");
+$mysql = new mysqli("localhost","websql","hawley1","Pais");
 
-// $show_debug = 0;
-// if ($_SERVER["REMOTE_ADDR"] == "207.237.37.190") {
-// 	$show_debug = 1;
-// }
+$show_debug = 0;
+if ($_SERVER["REMOTE_ADDR"] == "207.237.37.190") {
+	$show_debug = 1;
+}
 
 $formdata = array();
 $isUpdate = false;
@@ -24,28 +24,28 @@ $formdata['bandaid4'] = -1;
 
 $bodyPartSide = array('Left','Right','N/A');
 
-// if (isset($_GET['update']) && !empty($_GET['update'])) {
+if (isset($_GET['update']) && !empty($_GET['update'])) {
 	// mysql_connect('localhost','websql','hawley1');
 	// mysql_select_db('Pais');
-	$conn = mysqli_connect('localhost', 'root', '', 'amskier');
-	// $update = addslashes($_GET['update']);
-	// $query = "SELECT * FROM dbo_ClaimsWC WHERE ClaimsWCID='$update'";
-	$query = "SELECT * FROM dbo_ClaimsWC";
+	// $conn = mysqli_connect('localhost', 'root', '', 'amskier');
+	$update = addslashes($_GET['update']);
+	$query = "SELECT * FROM dbo_ClaimsWC WHERE ClaimsWCID='$update'";
+	// $query = "SELECT * FROM dbo_ClaimsWC";
 	$result = $conn->query($query);
 	if ($result->num_rows > 0) {
 		$row = $result->fetch_object();
-		// if ($row->AccID == $_SESSION['AMSKIER']['authAccId']) {
+		if ($row->AccID == $_SESSION['AMSKIER']['authAccId']) {
 			$isUpdate = true;
 			$updateRow = $row;
 			$formdata['campName'] = $row->CampName;
-			// if (empty($row->CampName)) {
-			// 	$formdata['campName'] = $_SESSION['AMSKIER']['campName'];
-			// }
-			// $formdata['campLocation'] = $row->CampLocationID;
-			// if (empty($row->CampLocationID)) {
-			// 	$lid = $_SESSION['AMSKIER']['campLocationID'];
-			// 	$formdata['campLocation'] = $_SESSION['AMSKIER']['locations'][$lid];
-			// }
+			if (empty($row->CampName)) {
+				$formdata['campName'] = $_SESSION['AMSKIER']['campName'];
+			}
+			$formdata['campLocation'] = $row->CampLocationID;
+			if (empty($row->CampLocationID)) {
+				$lid = $_SESSION['AMSKIER']['campLocationID'];
+				$formdata['campLocation'] = $_SESSION['AMSKIER']['locations'][$lid];
+			}
 			$formdata['firstName'] = $row->EEFirstName;
 			$formdata['lastName'] = $row->EELastName;
 			$formdata['jobTitle'] = $row->EEJob;
@@ -119,16 +119,16 @@ $bodyPartSide = array('Left','Right','N/A');
 			$formdata['severity'] = $row->Severity;
 			$formdata['Featured'] = $row->Featured;
 			$formdata['ReportOnly'] = $row->ReportOnly;
-		// }
+		}
 	}
-// }
-// else {
-// 	$formdata['campName'] = $_SESSION['AMSKIER']['campName'];
-// 	$lid = $_SESSION['AMSKIER']['campLocationID'];
-// 	$formdata['campLocation'] = $_SESSION['AMSKIER']['locations'][$lid];
-// }
+}
+else {
+	$formdata['campName'] = $_SESSION['AMSKIER']['campName'];
+	$lid = $_SESSION['AMSKIER']['campLocationID'];
+	$formdata['campLocation'] = $_SESSION['AMSKIER']['locations'][$lid];
+}
 
-// include("workers_comp_data.php");
+include("workers_comp_data.php");
 //print "<!-- \n";
 //print_r($formdata);
 //print "\n -->\n";
@@ -282,7 +282,7 @@ function goDashboard() {
 	    </div>	
 	</div>
 	 -->
-	<!-- <?php include("../includes/amskier-header-2.php"); ?> -->
+	<?php include("../includes/amskier-header-2.php"); ?>
 	
 	<ol class="breadcrumb" style="margin: 0px">
 		<li><a href="index.php">HOME</a></li>
@@ -907,9 +907,9 @@ function goDashboard() {
 </div>
 
 <!-------------------------------------------------------------------------------------------------- End Form Filled Out By  ----------------------------------------------------------------------------------------->
-<!-- <div id="debug"></div> -->
+<div id="debug"></div>
 
-<!-- <?php include("../includes/amskier-footer.php"); ?> -->
+<?php include("../includes/amskier-footer.php"); ?>
 <script src='../includes/gb.js'></script>
 </body>
 </html>
