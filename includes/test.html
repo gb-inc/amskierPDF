@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Generate PDF from JSON data using JavaScript</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+  </head>
+  <body>
+    <h1>Generate PDF from JSON data using JavaScript</h1>
+    <button id="generate-pdf">Generate PDF</button>
+    <script>
+      const data = [
+        {
+          id: 1,
+          name: 'Item 1',
+          price: 10.99
+        },
+        {
+          id: 2,
+          name: 'Item 2',
+          price: 5.99
+        },
+        {
+          id: 3,
+          name: 'Item 3',
+          price: 15.99
+        }
+      ];
+
+      document.getElementById('generate-pdf').addEventListener('click', function() {
+        generatePDF(data);
+      });
+      function generatePDF(data) {
+  // create a new jsPDF instance
+  const doc = new jsPDF();
+
+  // set initial page number
+  let pageNumber = 1;
+
+  // loop through the data and add it to the PDF document
+  for (const item of data) {
+    // add a new page if needed
+    if (pageNumber > 1) {
+      doc.addPage();
+    }
+
+    // add the item to the PDF document
+    doc.text(`Item ID: ${item.id}`, 10, 10);
+    doc.text(`Item Name: ${item.name}`, 10, 20);
+    doc.text(`Item Price: ${item.price}`, 10, 30);
+
+    // increment page number
+    pageNumber++;
+  }
+
+  // save the PDF document
+  doc.save('document.pdf');
+}
+
+    </script>
+  </body>
+</html>

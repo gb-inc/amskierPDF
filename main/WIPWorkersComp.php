@@ -1,7 +1,7 @@
 <?php
 // require_once("init.php");
 session_start();
-
+$_SESSION['campName'] = "Grandjean & Braverman";
 
 $conn = mysqli_connect('localhost', 'root', '', 'amskier');
 if(!$conn){
@@ -15,31 +15,142 @@ if(!$conn){
 // if ($_SERVER["REMOTE_ADDR"] == "207.237.37.190") {
 // 	$show_debug = 1;
 // }
-
 $formdata = array();
 $isUpdate = false;
 $formdata['bandaid1'] = -1;
 $formdata['bandaid2'] = -1;
 $formdata['bandaid3'] = -1;
 $formdata['bandaid4'] = -1;
-
-$bodyParts = array('Head', 'Neck', 'Back', 'Arm', 'Leg');
+$months = array(1,2,3,4,5,6,7,8,9,10,11,12);
+$locations = array("Gym", "Athletic Field", "Cabin", "Cafeteria", "Lake", "Dock", "Beach");
 $bodyPartSide = array('Left','Right','N/A');
+$injuryTypes = array(
+    "Sprained ankle",
+    "Broken arm",
+    "Concussion",
+    "Dislocated shoulder",
+    "ACL tear",
+    "Shin splints",
+    "Rotator cuff tear",
+    "Tennis elbow",
+    "Pulled hamstring",
+    "Stress fracture",
+    "Runner's knee",
+    "Plantar fasciitis",
+    "Whiplash",
+    "Herniated disc",
+    "Carpal tunnel syndrome",
+    "Sciatica",
+    "Torn meniscus",
+    "Frozen shoulder",
+    "Bursitis",
+    "Patellar tendinitis"
+  );
 
+  $illnessTypes = array(
+    "Asthma",
+    "Chickenpox",
+    "Croup",
+    "Diarrhea",
+    "Ear infection",
+    "Fifth disease",
+    "Flu",
+    "Hand, foot, and mouth disease",
+    "Head lice",
+    "Measles",
+    "Meningitis",
+    "Mononucleosis",
+    "Pneumonia",
+    "Roseola",
+    "RSV",
+    "Strep throat",
+    "Urinary tract infection",
+    "Viral gastroenteritis",
+    "Whooping cough",
+  );
+  
+  $activityTypes = array(
+    "Arts and crafts",
+    "Campfire songs",
+    "Canoeing",
+    "Capture the flag",
+    "Cookouts",
+    "Drama performances",
+    "Fishing",
+    "Hiking",
+    "Horseback riding",
+    "Kayaking",
+    "Nature walks",
+    "Obstacle course",
+    "Outdoor games",
+    "Rock climbing",
+    "Scavenger hunt",
+    "S'mores making",
+    "Sports",
+    "Swimming",
+    "Talent show",
+    "Zip-lining"
+  );
+  $incidentCauses = array(
+    "Slip, trip, or fall",
+    "Overexertion",
+    "Struck by object",
+    "Motor vehicle accidents",
+    "Repetitive motion",
+    "Falling objects",
+    "Electrical hazards",
+    "Caught in or compressed by equipment or objects",
+    "Exposure to harmful substances",
+    "Workplace violence",
+    "Burns",
+    "Cuts or lacerations",
+    "Sudden trauma",
+    "Assaults or fights",
+    "Inhaling toxic substances",
+    "Fires or explosions",
+    "Equipment failure",
+    "Structural collapse",
+    "Environmental conditions (e.g. extreme heat, cold, or noise)",
+    "Lack of training or experience"
+  );
+  
+  $bodyParts = array(
+    "Back",
+    "Knee",
+    "Shoulder",
+    "Hand",
+    "Foot",
+    "Ankle",
+    "Head",
+    "Wrist",
+    "Neck",
+    "Fingers",
+    "Hip",
+    "Elbow",
+    "Chest",
+    "Face",
+    "Eye",
+    "Toes",
+    "Leg",
+    "Arm",
+    "Mouth",
+    "Ear"
+  );
+  
 // if (isset($_GET['update']) && !empty($_GET['update'])) {
 	// mysql_connect('localhost','websql','hawley1');
 	// mysql_select_db('Pais');
-	$conn = mysqli_connect('localhost', 'root', '', 'amskier');
+	// $conn = mysqli_connect('localhost', 'root', '', 'amskier');
 	// $update = addslashes($_GET['update']);
 	// $query = "SELECT * FROM dbo_ClaimsWC WHERE ClaimsWCID='$update'";
-	$query = "SELECT * FROM dbo_ClaimsWC";
-	$result = $conn->query($query);
-	if ($result->num_rows > 0) {
-		$row = $result->fetch_object();
+	// $query = "SELECT * FROM dbo_ClaimsWC";
+	// $result = $conn->query($query);
+	// if ($result->num_rows > 0) {
+	// 	$row = $result->fetch_object();
 		// if ($row->AccID == $_SESSION['AMSKIER']['authAccId']) {
-			$isUpdate = true;
-			$updateRow = $row;
-			$formdata['campName'] = $row->CampName;
+			// $isUpdate = true;
+			// $updateRow = $row;
+			// $formdata['campName'] = $row->CampName;
 			// if (empty($row->CampName)) {
 			// 	$formdata['campName'] = $_SESSION['AMSKIER']['campName'];
 			// }
@@ -48,81 +159,81 @@ $bodyPartSide = array('Left','Right','N/A');
 			// 	$lid = $_SESSION['AMSKIER']['campLocationID'];
 			// 	$formdata['campLocation'] = $_SESSION['AMSKIER']['locations'][$lid];
 			// }
-			$formdata['firstName'] = $row->EEFirstName;
-			$formdata['lastName'] = $row->EELastName;
-			$formdata['jobTitle'] = $row->EEJob;
-			$formdata['numDependents'] = $row->EEDependents;
-			$formdata['address'] = $row->EEAddress;
-			$formdata['city'] = $row->EECity;
-			$formdata['state'] = $row->EEState;
-			$formdata['zip'] = $row->EEZip;
-			$formdata['phone'] = $row->EEPhone;
-			if ($row->EEHireDate == '0000-00-00 00:00:00') {
-				$formdata['dateOfHire'] = '';
-			}
-			else {
-				$formdata['dateOfHire'] = date('Y-m-d', strtotime($row->EEHireDate));
-			}
-			if ($row->EEMale == 1) { $formdata['gender'] = 'Male'; }
-			else if ($row->EEFemale == 1) { $formdata['gender'] = 'Female'; }
-			if ($row->EEDOB == '0000-00-00 00:00:00' || empty($row->EEDOB)) { $formdata['dobMonth'] = ''; $formdata['dobDay'] = ''; $formdata['dobYear'] = ''; }
-			else {
-				$formdata['dobMonth'] = date('n', strtotime($row->EEDOB));
-				$formdata['dobDay'] = date('j', strtotime($row->EEDOB));
-				$formdata['dobYear'] = date('Y', strtotime($row->EEDOB));
-			}
-			$formdata['ssn'] = $row->EESocial;
-			$formdata['workDaysPerWeek'] = $row->EEWorkPerWeek;
-			$formdata['avgEarningsPerWeek'] = $row->AvgEarnings;
-			if ($row->EEMarried == 1) { $formdata['maritalStatus'] = 'Married'; }
-			else if ($row->EESingle == 1) { $formdata['maritalStatus'] = 'Single'; }
-			if ($row->StaffUS == 1) { $formdata['international'] = 'No'; }
-			else if ($row->StaffIntl == 1) { $formdata['international'] = 'Yes'; }
-			$formdata['agency'] = $row->IntStaffAgency;
-			$formdata['employed'] = $row->EmployStatus;
-			$formdata['injuryLocation'] = $row->InjLocationWhere;
-			$formdata['injuryCause'] = $row->CauseDes;
-			$formdata['injuryBodyPart'] = $row->BodyPartDes;
-			//$formdata['injuryBodyPartSide'] = $row->BodyPartSide;
-			$formdata['injuryType'] = $row->InjuryDes;
-			$formdata['illnessType'] = $row->IllnessDes;
-			$formdata['activityType'] = $row->ActivityDes;
-			$formdata['accidentDate'] = date('Y-m-d', strtotime($row->InjuryDate));
-			$formdata['accidentTime'] = $row->InjuryTime;
-			if ($row->DateRec == '0000-00-00' || $row->DateRec == '0000-00-00 00:00:00' || empty($row->DateRec)) { $formdata['accidentReportDate'] = ''; }
-			else { $formdata['accidentReportDate'] = date('Y-m-d', strtotime($row->DateRec)); }
-			if ($row->LastDayWorked == '0000-00-00' || $row->LastDayWorked == '0000-00-00 00:00:00' || empty($row->LastDayWorked)) { $formdata['dateStoppedWork'] = ''; }
-			else { $formdata['dateStoppedWork'] = date('Y-m-d', strtotime($row->LastDayWorked)); }
-			if ($row->ReturnDate == '0000-00-00' || $row->ReturnDate == '0000-00-00 00:00:00' || empty($row->ReturnDate)) { $formdata['dateReturned'] = ''; }
-			else { $formdata['dateReturned'] = date('Y-m-d', strtotime($row->ReturnDate)); }
-			$formdata['timeReturned'] = $row->TimeBeganWork;
-			$formdata['unsafeAct'] = $row->UnsafeAct;
-			$formdata['accidentAtCamp'] = $row->AccdAtCamp;
-			$formdata['doingWhenInjured'] = $row->DoingWhenInjured;
-			$formdata['outsideAddress'] = $row->AccidentAdd;
-			$formdata['injuryObject'] = $row->EquipUsed;
-			if ($row->FullPayYes == 1) { $formdata['staffPaid'] = 'Yes'; }
-			else if ($row->FullPayNo == 1) { $formdata['staffPaid'] = 'No'; }
-			$formdata['howOccured'] = $row->InjuryDesc;
-			if ($row->CareProvidedYes == 1) { $formdata['campMedicalCare'] = 'Yes'; }
-			else if ($row->CareProvidedNo == 1) { $formdata['campMedicalCare'] = 'No'; }
-			$formdata['whereTreated'] = $row->HospName;
-			$formdata['campMedicalCareDetail'] = $row->HospNameNote;
-			$formdata['notes'] = $row->Notes;
-			$formdata['bandaid1'] = $row->BA1;
-			$formdata['bandaid2'] = $row->BA2;
-			$formdata['bandaid3'] = $row->BA3;
-			$formdata['bandaid4'] = $row->BA4;
-			$formdata['sb_firstName'] = $row->whoFirstName;
-			$formdata['sb_lastName'] = $row->whoLastName;
-			$formdata['sb_title'] = $row->whoTitle;
+			// $formdata['firstName'] = $row->EEFirstName;
+			// $formdata['lastName'] = $row->EELastName;
+			// $formdata['jobTitle'] = $row->EEJob;
+			// $formdata['numDependents'] = $row->EEDependents;
+			// $formdata['address'] = $row->EEAddress;
+			// $formdata['city'] = $row->EECity;
+			// $formdata['state'] = $row->EEState;
+			// $formdata['zip'] = $row->EEZip;
+			// $formdata['phone'] = $row->EEPhone;
+			// if ($row->EEHireDate == '0000-00-00 00:00:00') {
+			// 	$formdata['dateOfHire'] = '';
+			// }
+			// else {
+			// 	$formdata['dateOfHire'] = date('Y-m-d', strtotime($row->EEHireDate));
+			// }
+			// if ($row->EEMale == 1) { $formdata['gender'] = 'Male'; }
+			// else if ($row->EEFemale == 1) { $formdata['gender'] = 'Female'; }
+			// if ($row->EEDOB == '0000-00-00 00:00:00' || empty($row->EEDOB)) { $formdata['dobMonth'] = ''; $formdata['dobDay'] = ''; $formdata['dobYear'] = ''; }
+			// else {
+			// 	$formdata['dobMonth'] = date('n', strtotime($row->EEDOB));
+			// 	$formdata['dobDay'] = date('j', strtotime($row->EEDOB));
+			// 	$formdata['dobYear'] = date('Y', strtotime($row->EEDOB));
+			// }
+			// $formdata['ssn'] = $row->EESocial;
+			// $formdata['workDaysPerWeek'] = $row->EEWorkPerWeek;
+			// $formdata['avgEarningsPerWeek'] = $row->AvgEarnings;
+			// if ($row->EEMarried == 1) { $formdata['maritalStatus'] = 'Married'; }
+			// else if ($row->EESingle == 1) { $formdata['maritalStatus'] = 'Single'; }
+			// if ($row->StaffUS == 1) { $formdata['international'] = 'No'; }
+			// else if ($row->StaffIntl == 1) { $formdata['international'] = 'Yes'; }
+			// $formdata['agency'] = $row->IntStaffAgency;
+			// $formdata['employed'] = $row->EmployStatus;
+			// $formdata['injuryLocation'] = $row->InjLocationWhere;
+			// $formdata['injuryCause'] = $row->CauseDes;
+			// $formdata['injuryBodyPart'] = $row->BodyPartDes;
+			// //$formdata['injuryBodyPartSide'] = $row->BodyPartSide;
+			// $formdata['injuryType'] = $row->InjuryDes;
+			// $formdata['illnessType'] = $row->IllnessDes;
+			// $formdata['activityType'] = $row->ActivityDes;
+			// $formdata['accidentDate'] = date('Y-m-d', strtotime($row->InjuryDate));
+			// $formdata['accidentTime'] = $row->InjuryTime;
+			// if ($row->DateRec == '0000-00-00' || $row->DateRec == '0000-00-00 00:00:00' || empty($row->DateRec)) { $formdata['accidentReportDate'] = ''; }
+			// else { $formdata['accidentReportDate'] = date('Y-m-d', strtotime($row->DateRec)); }
+			// if ($row->LastDayWorked == '0000-00-00' || $row->LastDayWorked == '0000-00-00 00:00:00' || empty($row->LastDayWorked)) { $formdata['dateStoppedWork'] = ''; }
+			// else { $formdata['dateStoppedWork'] = date('Y-m-d', strtotime($row->LastDayWorked)); }
+			// if ($row->ReturnDate == '0000-00-00' || $row->ReturnDate == '0000-00-00 00:00:00' || empty($row->ReturnDate)) { $formdata['dateReturned'] = ''; }
+			// else { $formdata['dateReturned'] = date('Y-m-d', strtotime($row->ReturnDate)); }
+			// $formdata['timeReturned'] = $row->TimeBeganWork;
+			// $formdata['unsafeAct'] = $row->UnsafeAct;
+			// $formdata['accidentAtCamp'] = $row->AccdAtCamp;
+			// $formdata['doingWhenInjured'] = $row->DoingWhenInjured;
+			// $formdata['outsideAddress'] = $row->AccidentAdd;
+			// $formdata['injuryObject'] = $row->EquipUsed;
+			// if ($row->FullPayYes == 1) { $formdata['staffPaid'] = 'Yes'; }
+			// else if ($row->FullPayNo == 1) { $formdata['staffPaid'] = 'No'; }
+			// $formdata['howOccured'] = $row->InjuryDesc;
+			// if ($row->CareProvidedYes == 1) { $formdata['campMedicalCare'] = 'Yes'; }
+			// else if ($row->CareProvidedNo == 1) { $formdata['campMedicalCare'] = 'No'; }
+			// $formdata['whereTreated'] = $row->HospName;
+			// $formdata['campMedicalCareDetail'] = $row->HospNameNote;
+			// $formdata['notes'] = $row->Notes;
+			// $formdata['bandaid1'] = $row->BA1;
+			// $formdata['bandaid2'] = $row->BA2;
+			// $formdata['bandaid3'] = $row->BA3;
+			// $formdata['bandaid4'] = $row->BA4;
+			// $formdata['sb_firstName'] = $row->whoFirstName;
+			// $formdata['sb_lastName'] = $row->whoLastName;
+			// $formdata['sb_title'] = $row->whoTitle;
 			
-			$formdata['FirstAid'] = $row->FirstAid;
-			$formdata['severity'] = $row->Severity;
-			$formdata['Featured'] = $row->Featured;
+			// $formdata['FirstAid'] = $row->FirstAid;
+			// $formdata['severity'] = $row->Severity;
+			// $formdata['Featured'] = $row->Featured;
 			// $formdata['ReportOnly'] = $row->ReportOnly;
 		// }
-	}
+	// }
 // }
 // else {
 // 	$formdata['campName'] = $_SESSION['AMSKIER']['campName'];
@@ -138,10 +249,6 @@ $bodyPartSide = array('Left','Right','N/A');
 <!DOCTYPE html>
 <html>
 <head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
 <!-- <link rel="stylesheet" href="../includes/css/Aristo/Aristo.css" type="text/css" charset="utf-8" /> -->
 <link rel="stylesheet" href="../includes/fonts/Aller/stylesheet.css" type="text/css" />
@@ -160,7 +267,6 @@ $bodyPartSide = array('Left','Right','N/A');
 <link rel="stylesheet" href="../includes/css/amskier.css" type="text/css" />
 <link rel="stylesheet" href="../includes/css/gb.css" type="text/css" />
 <meta name="viewport" content = "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
-
 <title>AMSkier - Members Only - Workers Compensation Report</title>
 <style type="text/css">
 #debug {
@@ -206,80 +312,6 @@ html{
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script> -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="../includes/amskier.js"></script>
-<script type="text/javascript">
-var show_debug = <?php 
-// $show_debug;
-?>
-// var isUpdate = <?//php if ($isUpdate == true) { echo(1); } else { echo(0); } ?>;
-// <?php
-if ($isUpdate == true) {
-	//print "var updateIdx = ".$_GET['update'].";\n";
-}
-?>
-
-$(document).ready(function() {
-	if (show_debug == 1) {
-		$("#debug").html( $(window).width() + "px" );
-		$(window).resize(function() {
-			$("#debug").html( $(window).width() + "px" );
-		});
-	}
-	else {
-		$("#debug").hide();
-	}
-});
-
-function submitForm() {
-	var opts = { op: 'submitWorkersComp' };
-	$(":radio:checked").each(function(a) {
-		var name = $(this).attr('name');
-		var val = $(this).val();
-		opts[name] = val;
-	});
-	$("select, input:text, input[type='date'], input[type='time'], textarea").each(function(a) {
-		var id = $(this).attr('id');
-		var val = $(this).val();
-		opts[id] = val;
-	});
-	opts.isUpdate = isUpdate;
-	if (isUpdate == 1) { opts.updateIdx = updateIdx; }
-	$.post('ajax.php', opts, function(data) {
-		var json = $.parseJSON(data);
-		if (json.isError == true) {
-			var err = json.errorMessage + "\n\n";
-			for (var i in json.data.missing) {
-				err += json.data.missing[i]+"\n";
-			}
-			alert(err);
-		}
-		else {
-			console.log(json.data.query);
-			$('#wc_main').hide('fade', 500, function() {
-				$('#wc_thanks').show('fade', 500);
-			});
-		}
-	});
-}
-function myTest() {
-	var zip = document.getElementById("zip").value;
-	var xTest = '';
-	var opts = { op: 'getZipDetail', zip: zip};
-	
-	$.post('ajax.php', opts, function(data) {
-		var json = $.parseJSON(data);
-		if (json.isError == true) {
-		} else {
-			//$('#ri_tbody').html(json.data.html);
-			//xTest = json.data.city;
-			$('#city').val(json.data.city);
-			$('#state').val(json.data.state);
-		}
-	});
-}
-function goDashboard() {
-	window.location.href = 'index.php';
-}
-</script>
 </head>
 <body>
 
@@ -333,19 +365,13 @@ function goDashboard() {
 				<div class="col-lg-12">
 					<div class="form-group col-lg-6">
 						<label for="campName" class="skier-label">Camp Name</label>
-						<input type="text" name="campName" id="campName" class="input-lg form-control skier-input-two" placeholder="Camp Name" autocomplete="off" value="<?= $formdata['campName'] ?>" />
+						<input type="text" name="campName" id="campName" class="input-lg form-control skier-input-two" placeholder="Camp Name" autocomplete="off" value="<?= $_SESSION['campName'] ?>" />
 					</div>
 					<div class="form-group col-lg-6">
 						<label for="campLocation" class="skier-label">Location</label>
 						<select name="campLocation" id="campLocation" class="input-lg form-control skier-select">
-							<option value="">-- Select --</option>
-							<?php
-							foreach ($_SESSION['AMSKIER']['locations'] as $id=>$loc) {
-								print "<option value=\"$id\"";
-								if ($id == $formdata['campLocation']) { print " selected=\"selected\""; }
-								print ">$loc</option>\n";
-							}
-							?>
+							<option value="">N/A</option>
+							
 						</select>
 					</div>
 					<div style="clear:both"></div>
@@ -365,25 +391,25 @@ function goDashboard() {
 					<div class="col-lg-12">
 						<div class="form-group col-lg-6">
 							<label for="firstName" class="skier-label">First Name</label>
-							<input type="text" name="firstName" id="firstName" class="input-lg form-control skier-input-two" placeholder="First Name" autocomplete="off" value="<?= $formdata['firstName'] ?>" />
+							<input type="text" name="firstName" id="firstName" class="input-lg form-control skier-input-two" placeholder="First Name" autocomplete="off" value="" />
 						</div>
 						<div class="form-group col-lg-6">
 							<label for="lastName" class="skier-label">Last Name</label>
-							<input type="text" name="lastName" id="lastName" class="input-lg form-control skier-input-two" placeholder="Last Name" autocomplete="off" value="<?= $formdata['lastName'] ?>" />
+							<input type="text" name="lastName" id="lastName" class="input-lg form-control skier-input-two" placeholder="Last Name" autocomplete="off" value="" />
 						</div>
 						<div style="clear:both"></div>
 					</div>
 					<div class="col-lg-12 skier-label">
 						<div class="form-group col-lg-6">
 							<label for="maritalStatus" class="skier-label">Marital Status</label>
-							<div><input type="radio" name="maritalStatus" id="maritalStatus_married" value="Married"<?php if ($formdata['maritalStatus'] == 'Married') { print ' checked="checked"'; } ?> /> Married &nbsp;
-								<input type="radio" name="maritalStatus" id="maritalStatus_single" value="Single"<?php if ($formdata['maritalStatus'] == 'Single') { print ' checked="checked"'; } ?> /> Single
+							<div><input type="radio" name="maritalStatus" id="maritalStatus_married" value="Married" /> Married &nbsp;
+								<input type="radio" name="maritalStatus" id="maritalStatus_single" value="Single" checked='checked' /> Single
 							</div>
 						</div>
 						<div class="form-group col-lg-6 skier-label">
 							<label for="gender" class="skier-label">Gender</label>
-							<div><input type="radio" name="gender" id="gender_male" value="Male"<?php if ($formdata['gender'] == 'Male') { print ' checked="checked"'; } ?> /> Male &nbsp;
-								<input type="radio" name="gender" id="gender_female" value="Female"<?php if ($formdata['gender'] == 'Female') { print ' checked="checked"'; } ?> /> Female
+							<div><input type="radio" name="gender" id="gender_male" value="Male"/> Male &nbsp;
+								<input type="radio" name="gender" id="gender_female" value="Female" checked='checked'/> Female
 							</div>
 						</div>
 						<div style="clear:both"></div>
@@ -392,12 +418,16 @@ function goDashboard() {
 						<label for="dobMonth" class="skier-label">Date of Birth</label>
 						<select name="dobMonth" id="dobMonth" class="input-lg form-control skier-select">
 							<option value="">Month</option>
+
 							<?php
-							foreach ($months as $num=>$name) {
-								print "<option value=\"$num\"";
-								if ($num == $formdata["dobMonth"]) { print " selected=\"selected\""; }
-								print ">$name</option>";
-							}
+                                for($i=1; $i<=count($months); $i++){
+                                    echo "<option placeholder='Month'>$i</option>";
+                                }
+                                
+                                ?>
+                            
+							<?php
+							
 							?>
 						</select>
 					</div>
@@ -406,11 +436,9 @@ function goDashboard() {
 						<select name="dobDay" id="dobDay" class="input-lg form-control skier-select">
 							<option value="">Day</option>
 							<?php
-							for ($i=1; $i<=31; $i++) {
-								print "<option value=\"$i\"";
-								if ($i == $formdata["dobDay"]) { print " selected=\"selected\""; }
-								print ">$i</option>";
-							}
+                                for($i=1; $i<=31; $i++){
+                                    echo "<option placeholder='Day'>$i</option>";
+                                }
 							?>
 						</select>
 					</div>
@@ -423,7 +451,6 @@ function goDashboard() {
 							$endYear = date('Y')-90;
 							for ($i=$startYear; $i>=$endYear; $i--) {
 								print "<option value=\"$i\"";
-								if ($i == $formdata['dobYear']) { print ' selected="selected"'; }
 								print ">$i</option>\n";
 							}
 							?>
@@ -431,19 +458,19 @@ function goDashboard() {
 					</div>
 					<div class="form-group col-lg-4">
 						<label for="ssn" class="skier-label">Social Security #</label>
-						<input type="text" name="ssn" id="ssn" class="input-lg form-control skier-label-two" placeholder="SSN" autocomplete="off" value="<?= $formdata['ssn'] ?>" />
+						<input type="text" name="ssn" id="ssn" class="input-lg form-control skier-label-two" placeholder="SSN" autocomplete="off" value="" />
 					</div>
 					<div style="clear:both"></div>
 					<div class="col-lg-12 skier-label">
 					<div class="form-group col-lg-6">
 						<label for="international" class="skier-label">International staff</label>
-						<div><input type="radio" name="international" id="international_yes" value="Yes"<?php if ($formdata['international'] == 'Yes') { print ' checked="checked"'; } ?> /> Yes &nbsp;
-							<input type="radio" name="international" id="international_no" value="No"<?php if ($formdata['international'] == 'No') { print ' checked="checked"'; } ?> /> No
+						<div><input type="radio" name="international" id="international_yes" value="Yes" /> Yes &nbsp;
+							<input type="radio" name="international" id="international_no" value="No" checked = 'checked'/> No
 						</div>
 					</div>
 					<div class="form-group col-lg-6">
 						<label for="agency" class="skier-label">If yes, name of international staffing agency:</label>
-						<input type="text" name="agency" id="agency" class="input-lg form-control skier-input-two" placeholder="Name of Agency (int'l)" autocomplete="off" value="<?= $formdata['agency'] ?>" />
+						<input type="text" name="agency" id="agency" class="input-lg form-control skier-input-two" placeholder="Name of Agency (int'l)" autocomplete="off" value="" />
 					</div>
 					<div style="clear:both"></div>
 				</div>
@@ -452,27 +479,27 @@ function goDashboard() {
 					<div class="col-lg-12">
 						<div class="form-group col-lg-12">
 							<label for="address" class="skier-label">Address</label>
-							<input type="text" name="address" id="address" class="input-lg form-control skier-input-two" placeholder="Address" autocomplete="off" value="<?= $formdata['address'] ?>" />
+							<input type="text" name="address" id="address" class="input-lg form-control skier-input-two" placeholder="Address" autocomplete="off" value="" />
 						</div>
 					</div>
 					<div class="col-lg-12">
 						<div class="form-group col-lg-4">
 							<label for="zip" class="skier-label">Zip</label>
-							<input type="text" name="zip" id="zip" class="input-lg form-control skier-input-two" placeholder="Zip/Postal Code" onblur="myTest()" autocomplete="off" value="<?= $formdata['zip'] ?>" />
+							<input type="text" name="zip" id="zip" class="input-lg form-control skier-input-two" placeholder="Zip/Postal Code" onblur="myTest()" autocomplete="off" value="" />
 						</div>
 						<div class="form-group col-lg-4">
 							<label for="city" class="skier-label">City</label>
-							<input type="text" name="city" id="city" class="input-lg form-control skier-input-two" placeholder="City" autocomplete="off" value="<?= $formdata['city'] ?>" />
+							<input type="text" name="city" id="city" class="input-lg form-control skier-input-two" placeholder="City" autocomplete="off" value="" />
 						</div>
 						<div class="form-group col-lg-4">
 							<label for="state" class="skier-label">State</label>
-							<input type="text" name="state" id="state" class="input-lg form-control skier-input-two" placeholder="State" autocomplete="off" value="<?= $formdata['state'] ?>" />
+							<input type="text" name="state" id="state" class="input-lg form-control skier-input-two" placeholder="State" autocomplete="off" value="" />
 					</div>
 
 					<div class="col-lg-12">
 					<div class="form-group col-lg-12">
 						<label for="phone" class="skier-label">Phone # of injured staff</label>
-						<input type="text" name="phone" id="phone" class="input-lg form-control skier-input-two" placeholder="Phone # of injured staff" autocomplete="off" value="<?= $formdata['phone'] ?>" />
+						<input type="text" name="phone" id="phone" class="input-lg form-control skier-input-two" placeholder="Phone # of injured staff" autocomplete="off" value="" />
 						<div style='display: flex; justify-content: center; margin-top: 5px;'>
 				<button type="button" class="btn btn-primary skier-button" id="closeToNextInjured"><span>Next</span></button>
 				</div>
@@ -516,33 +543,33 @@ function goDashboard() {
 				<div class="col-lg-12">
 					<div class="form-group col-lg-6">
 						<label for="accidentDate" class="skier-label">Accident Date</label>
-						<input type="date" name="accidentDate" id="accidentDate" class="input-lg form-control skier-input-two" placeholder="Accident Date" autocomplete="off" value="<?= $formdata['accidentDate'] ?>" />
+						<input type="date" name="accidentDate" id="accidentDate" class="input-lg form-control skier-input-two" placeholder="Accident Date" autocomplete="off" value="" />
 					</div>
 					<div class="form-group col-lg-6">
 						<label for="accidentTime" class="skier-label">Accident Time</label>
-						<input type="time" name="accidentTime" id="accidentTime" class="input-lg form-control skier-input-two" placeholder="Accident Time" autocomplete="off" value="<?= $formdata['accidentTime'] ?>" />
+						<input type="time" name="accidentTime" id="accidentTime" class="input-lg form-control skier-input-two" placeholder="Accident Time" autocomplete="off" value="" />
 					</div>
 					<div style="clear:both"></div>
 				</div>
 				<div class="col-lg-12">
 					<div class="form-group col-lg-6">
 						<label for="accidentReportDate" class="skier-label">Date accident was reported</label>
-						<input type="date" name="accidentReportDate" id="accidentReportDate" class="input-lg form-control skier-input-two" placeholder="Accident report date" autocomplete="off" value="<?= $formdata['accidentReportDate'] ?>" />
+						<input type="date" name="accidentReportDate" id="accidentReportDate" class="input-lg form-control skier-input-two" placeholder="Accident report date" autocomplete="off" value="" />
 					</div>
 					<div class="form-group col-lg-6">
 						<label for="dateStoppedWork" class="skier-label">Date stopped work due to injury</label>
-						<input type="date" name="dateStoppedWork" id="dateStoppedWork" class="input-lg form-control skier-input-two" placeholder="Date stopped work" autocomplete="off" value="<?= $formdata['dateStoppedWork'] ?>" />
+						<input type="date" name="dateStoppedWork" id="dateStoppedWork" class="input-lg form-control skier-input-two" placeholder="Date stopped work" autocomplete="off" value="" />
 					</div>
 					<div style="clear:both"></div>
 				</div>
 				<div class="col-lg-12">
 					<div class="form-group col-lg-6">
 						<label for="dateReturnedToWork" class="skier-label">Date returned to work</label>
-						<input type="date" name="dateReturnedToWork" id="dateReturnedToWork" class="input-lg form-control skier-input-two" placeholder="Date returned to work" autocomplete="off" value="<?= $formdata['dateReturned'] ?>" />
+						<input type="date" name="dateReturnedToWork" id="dateReturnedToWork" class="input-lg form-control skier-input-two" placeholder="Date returned to work" autocomplete="off" value="" />
 					</div>
 					<div class="form-group col-lg-6">
 						<label for="timeReturnedToWork" class="skier-label">Time returned to work</label>
-						<input type="time" name="timeReturnedToWork" id="timeReturnedToWork" class="input-lg form-control skier-input-two" placeholder="Time returned to work" autocomplete="off" value="<?= $formdata['timeReturned'] ?>" />
+						<input type="time" name="timeReturnedToWork" id="timeReturnedToWork" class="input-lg form-control skier-input-two" placeholder="Time returned to work" autocomplete="off" value="" />
 					</div>
 					<div style="clear:both"></div>
 				</div>							
@@ -552,9 +579,8 @@ function goDashboard() {
 						<select name="injuryLocation" id="injuryLocation" class="input-lg form-control skier-select">
 							<option value="">-- Choose --</option>
 							<?php
-							foreach ($incidentLocations as $loc) {
+							foreach ($locations as $loc) {
 								print "<option value=\"$loc\"";
-								if ($loc == $formdata['injuryLocation']) { print ' selected="selected"'; }
 								print ">$loc</option>\n";
 							}
 							?>
@@ -563,14 +589,14 @@ function goDashboard() {
 					<div class="col-lg-12">
 					<div class="form-group col-lg-6">
 						<label for="unsafeAct" class="skier-label">Was staff involved in an unsafe act?</label>
-						<div><input type="radio" name="unsafeAct" id="unsafeAct_yes" value="Yes"<?php if ($formdata['unsafeAct'] == '1') { print ' checked="checked"'; } ?> /> Yes &nbsp;
-							<input type="radio" name="unsafeAct" id="unsafeAct_no" value="No"<?php if ($formdata['unsafeAct'] == '0') { print ' checked="checked"'; } ?> /> No
+						<div><input type="radio" name="unsafeAct" id="unsafeAct_yes" value="Yes" /> Yes &nbsp;
+							<input type="radio" name="unsafeAct" id="unsafeAct_no" value="No" checked="checked" /> No
 						</div>
 					</div>
 					<div class="form-group col-lg-6">
 						<label for="accidentAtCamp" class="skier-label">Accident occured at camp?</label>
-						<div><input type="radio" name="accidentAtCamp" id="accidentAtCamp_yes" value="Yes"<?php if ($formdata['accidentAtCamp'] == '1') { print ' checked="checked"'; } ?> /> Yes &nbsp;
-							<input type="radio" name="accidentAtCamp" id="accidentAtCamp_no" value="No"<?php if ($formdata['accidentAtCamp'] == '0') { print ' checked="checked"'; } ?> /> No
+						<div><input type="radio" name="accidentAtCamp" id="accidentAtCamp_yes" value="Yes" /> Yes &nbsp;
+							<input type="radio" name="accidentAtCamp" id="accidentAtCamp_no" value="No" checked ="checked" /> No
 						</div>
 					</div>
 					<div style="clear:both"></div>
@@ -579,7 +605,7 @@ function goDashboard() {
 				<div class="col-lg-12">
 					<div class="form-group col-lg-12">
 						<label for="outsideAddress" class="skier-label">Address, if injury was outside of camp:</label>
-						<textarea name="outsideAddress" id="outsideAddress" class="input-lg form-control skier-input-two" placeholder="Address if other than camp" rows="3"><?= $formdata['outsideAddress'] ?></textarea>
+						<textarea name="outsideAddress" id="outsideAddress" class="input-lg form-control skier-input-two" placeholder="Address if other than camp" rows="3"></textarea>
 					</div>
 
 					<div class="col-lg-12 skier-label" style="padding-left: 30px; color: green">First-Aid Qualifications</div>
@@ -587,14 +613,14 @@ function goDashboard() {
 					<!--<div class="skier-label" style="text-align: center; margin-bottom: 20px;">------ AMSkier Internal Use Only ------</div>-->
 					<div class="form-group col-lg-12">
 						<label for="firstAid" class="skier-label" style="color: green">First-Aid </label>
-						<div><input type="radio" name="firstAid" id="firstAid_yes" value="Yes"<?php // if ($formdata['FirstAid'] == 'Yes') { print ' checked="checked"'; } ?> /> Yes &nbsp;
-							<input type="radio" name="firstAid" id="firstAid_no" value="No"<?php //if ($formdata['FirstAid'] == 'No') { print ' checked="checked"'; } ?> /> No
+						<div><input type="radio" name="firstAid" id="firstAid_yes" value="Yes" /> Yes &nbsp;
+							<input type="radio" name="firstAid" id="firstAid_no" value="No" checked="checked" /> No
 						</div>
 					</div>
 					<div class="form-group col-lg-12">
 						<label for="firstAid" class="skier-label">Report Only &nbsp; &nbsp; ( Non NY State camps Only )</label>
-						<div><input type="radio" name="reportOnly" id="reportOnly_yes" value="Yes"<?php // if ($formdata['ReportOnly'] == 'Yes') { print ' checked="checked"'; } ?> /> Yes &nbsp;
-							<input type="radio" name="reportOnly" id="reportOnly_no" value="No"<?php //if ($formdata['ReportOnly'] == 'No') { print ' checked="checked"'; } ?> /> No
+						<div><input type="radio" name="reportOnly" id="reportOnly_yes" value="Yes" /> Yes &nbsp;
+							<input type="radio" name="reportOnly" id="reportOnly_no" value="No" checked= "checked" /> No
 						</div>
 					</div>
 					<!--
@@ -612,8 +638,8 @@ function goDashboard() {
 						1. Do you expect more than two medical provider visits?
 					</div>
 					<div class="form-group col-lg-3" >
-						<input type="radio" name="bandaid1" id="bandaid1_yes" value="Yes"<?php if ($formdata['bandaid1'] == 1) { print ' checked="checked"'; } ?> /> Yes &nbsp;
-						<input type="radio" name="bandaid1" id="bandaid1_no" value="No"<?php if ($formdata['bandaid1'] == 0) { print ' checked="checked"'; } ?> /> No
+						<input type="radio" name="bandaid1" id="bandaid1_yes" value="Yes" /> Yes &nbsp;
+						<input type="radio" name="bandaid1" id="bandaid1_no" value="No" checked="checked" /> No
 					</div>
 					<div style="clear:both"></div>
 				</div>
@@ -622,8 +648,8 @@ function goDashboard() {
 						2. Has there been lost time from work, other than the day of the Injury?
 					</div>
 					<div class="form-group col-lg-3">
-						<input type="radio" name="bandaid2" id="bandaid2_yes" value="Yes"<?php if ($formdata['bandaid2'] == 1) { print ' checked="checked"'; } ?> /> Yes &nbsp;
-						<input type="radio" name="bandaid2" id="bandaid2_no" value="No"<?php if ($formdata['bandaid2'] == 0) { print ' checked="checked"'; } ?> /> No
+						<input type="radio" name="bandaid2" id="bandaid2_yes" value="Yes" /> Yes &nbsp;
+						<input type="radio" name="bandaid2" id="bandaid2_no" value="No" checked="checked" /> No
 					</div>
 					<div style="clear:both"></div>
 				</div> 
@@ -632,8 +658,8 @@ function goDashboard() {
 						3. Do the total bills exceed $750 for an accident ($1,000 in New York State)?
 					</div>
 					<div class="form-group col-lg-3">
-						<input type="radio" name="bandaid3" id="bandaid3_yes" value="Yes"<?php if ($formdata['bandaid3'] == 1) { print ' checked="checked"'; } ?> /> Yes &nbsp;
-						<input type="radio" name="bandaid3" id="bandaid3_no" value="No"<?php if ($formdata['bandaid3'] == 0) { print ' checked="checked"'; } ?> /> No
+						<input type="radio" name="bandaid3" id="bandaid3_yes" value="Yes" /> Yes &nbsp;
+						<input type="radio" name="bandaid3" id="bandaid3_no" value="No" checked="checked"/> No
 					</div>
 					<div style="clear:both"></div>
 				</div>
@@ -642,8 +668,8 @@ function goDashboard() {
 						<strong>If all three answers are NO, this may qualify to be a First Aid claim. Do you want to make it a First Aid claim?</strong>
 					</div>
 					<div class="form-group col-lg-3">
-						<input type="radio" name="bandaid4" id="bandaid4_yes" value="Yes"<?php if ($formdata['bandaid4'] == 1) { print ' checked="checked"'; } ?> /> Yes &nbsp;
-						<input type="radio" name="bandaid4" id="bandaid4_no" value="No"<?php if ($formdata['bandaid4'] == 0) { print ' checked="checked"'; } ?> /> No
+						<input type="radio" name="bandaid4" id="bandaid4_yes" value="Yes"/> Yes &nbsp;
+						<input type="radio" name="bandaid4" id="bandaid4_no" value="No" checked="checked" /> No
 					</div>
 					<div style="clear:both"></div>
 				</div>
@@ -673,7 +699,6 @@ function goDashboard() {
 							<?php
 							foreach ($injuryTypes as $type) {
 								print "<option value=\"$type\"";
-								if ($type == $formdata['injuryType']) { print ' selected="selected"'; }
 								print ">$type</option>\n";
 							}
 							?>
@@ -686,7 +711,6 @@ function goDashboard() {
 							<?php
 							foreach ($illnessTypes as $ill) {
 								print "<option value=\"$ill\"";
-								if ($ill == $formdata['illnessType']) { print ' selected="selected"'; }
 								print ">$ill</option>\n";
 							}
 							?>
@@ -699,7 +723,6 @@ function goDashboard() {
 							<?php
 							foreach ($activityTypes as $act) {
 								print "<option value=\"$act\"";
-								if ($act == $formdata['activityType']) { print ' selected="selected"'; }
 								print ">$act</option>\n";
 							}
 							?>
@@ -712,7 +735,6 @@ function goDashboard() {
 							<?php
 							foreach ($incidentCauses as $cause) {
 								print "<option value=\"$cause\"";
-								if ($cause == $formdata['injuryCause']) { print ' selected="selected"'; }
 								print ">$cause</option>\n";
 							}
 							?>
@@ -725,7 +747,6 @@ function goDashboard() {
 							<?php
 							foreach ($bodyParts as $part) {
 								print "<option value=\"$part\"";
-								if ($part == $formdata['injuryBodyPart']) { print ' selected="selected"'; }
 								print ">$part</option>\n";
 							}
 							?>
@@ -738,7 +759,6 @@ function goDashboard() {
 							<?php
 							foreach ($bodyPartSide as $part) {
 								print "<option value=\"$part\"";
-								if ($part == $formdata['injuryBodyPartSide']) { print ' selected="selected"'; }
 								print ">$part</option>\n";
 							}
 							?>
@@ -748,9 +768,9 @@ function goDashboard() {
 						<label for="severity" class="skier-label">Severity</label>
 						<select name="severity" id="severity" class="input-lg form-control skier-select">
 							<option value="">-- Choose --</option>
-							<option value="Low"<?php if ($formdata['Severity'] == 'Low') { print ' selected="selected"'; } ?>>Low</option>
-							<option value="Medium"<?php if ($formdata['Severity'] == 'Medium') { print ' selected="selected"'; } ?>>Medium</option>
-							<option value="High"<?php if ($formdata['Severity'] == 'High') { print ' selected="selected"'; } ?>>High</option>
+							<option value="Low">Low</option>
+							<option value="Medium">Medium</option>
+							<option value="High">High</option>
 						</select>
 					</div>				
 
@@ -758,26 +778,26 @@ function goDashboard() {
 					<div class="col-lg-12">
 					<div class="form-group col-lg-12">
 						<label for="doingWhenInjured" class="skier-label">What was staff doing when injured?</label>
-						<textarea name="doingWhenInjured" id="doingWhenInjured" class="input-lg form-control skier-input-two" placeholder="What was staff doing when injured?" rows="3"><?= $formdata['doingWhenInjured'] ?></textarea>
+						<textarea name="doingWhenInjured" id="doingWhenInjured" class="input-lg form-control skier-input-two" placeholder="What was staff doing when injured?" rows="3"></textarea>
 					</div>
 					</div>
 					<div class="col-lg-12">
 					<div class="form-group col-lg-12">
 						<label for="howOccured" class="skier-label">How did the accident or exposure occur?</label>
-						<textarea name="howOccured" id="howOccured" class="input-lg form-control skier-input-two" placeholder="How did the accident or exposure occur?" rows="3"><?= $formdata['howOccured'] ?></textarea>
+						<textarea name="howOccured" id="howOccured" class="input-lg form-control skier-input-two" placeholder="How did the accident or exposure occur?" rows="3"></textarea>
 					</div>
 					</div>
 					<div class="col-lg-12">
 					<div class="form-group col-lg-12">
 						<label for="injuryObject" class="skier-label">Object or substance that directly injured staff:</label>
-						<textarea name="injuryObject" id="injuryObject" class="input-lg form-control skier-input-two" placeholder="Object or substance that directly injured staff" rows="3"><?= $formdata['injuryObject'] ?></textarea>
+						<textarea name="injuryObject" id="injuryObject" class="input-lg form-control skier-input-two" placeholder="Object or substance that directly injured staff" rows="3"></textarea>
 					</div>
 					</div>
 
 					<div class="col-lg-12">
 					<div class="form-group col-lg-12">
 						<label for="whereTreated" class="skier-label">Name of Doctor, Hospital, or Medical Center where staff was treated:</label>
-						<textarea name="whereTreated" id="whereTreated" class="input-lg form-control skier-input-two" placeholder="Name of Doctor, Hospital, or Medical Center where staff was treated" rows="3"><?= $formdata['whereTreated'] ?></textarea>
+						<textarea name="whereTreated" id="whereTreated" class="input-lg form-control skier-input-two" placeholder="Name of Doctor, Hospital, or Medical Center where staff was treated" rows="3"></textarea>
 					</div>
 					</div>
 
@@ -785,9 +805,9 @@ function goDashboard() {
 					<div class="form-group col-lg-12">
 						<label for="staffPaid" class="skier-label">Was injured staff paid in full for the day of the accident?</label>
 						<div><input type="radio" name="staffPaid" id="staffPaid_yes" value="Yes"
-						<?php if ($formdata['staffPaid'] == 'Yes') { print ' checked="checked"'; } ?> 
+						
 						/> Yes &nbsp;
-							<input type="radio" name="staffPaid" id="staffPaid_no" value="No"<?php if ($formdata['staffPaid'] == 'No') { print ' checked="checked"'; } ?> /> No
+							<input type="radio" name="staffPaid" id="staffPaid_no" value="No" checked="checked" /> No
 						</div>
 					</div>
 				</div>
@@ -806,47 +826,47 @@ function goDashboard() {
 					
 					<div class="form-group col-lg-6">
 						<label for="jobTitle" class="skier-label">Job Title</label>
-						<input type="text" name="jobTitle" id="jobTitle" class="input-lg form-control skier-input-two" placeholder="Job Title" autocomplete="off" value="<?= $formdata['jobTitle'] ?>" />
+						<input type="text" name="jobTitle" id="jobTitle" class="input-lg form-control skier-input-two" placeholder="Job Title" autocomplete="off" value="" />
 					</div>
 					<div class="form-group col-lg-6">
 						<label for="dateOfHire" class="skier-label">Date of Hire</label>
-						<input type="date" name="dateOfHire" id="dateOfHire" class="input-lg form-control skier-input-two" placeholder="Date of Hire" autocomplete="off" value="<?= $formdata['dateOfHire'] ?>" />
+						<input type="date" name="dateOfHire" id="dateOfHire" class="input-lg form-control skier-input-two" placeholder="Date of Hire" autocomplete="off" value="" />
 					</div>
 					<div style="clear:both"></div>
 					<div class="col-lg-12 skier-label">
 					<div class="form-group col-lg-12">
 						<label for="employed" class="skier-label">Employment Status</label>
 						<div>
-							<input type="radio" name="employed" id="employed_fulltime" value="Full-Time"<?php if ($formdata['employed'] == 'Full-Time') { print ' checked="checked"'; } ?> /> Full-Time &nbsp;&nbsp;&nbsp; 
-							<input type="radio" name="employed" id="employed_parttime" value="Part-Time"<?php if ($formdata['employed'] == 'Part-Time') { print ' checked="checked"'; } ?> /> Part-Time &nbsp;&nbsp;&nbsp;
-							<input type="radio" name="employed" id="employed_seasonal" value="Seasonal"<?php if ($formdata['employed'] == 'Seasonal') { print ' checked="checked"'; } ?> /> Seasonal &nbsp;&nbsp;&nbsp;
-							<input type="radio" name="employed" id="employed_volunteer" value="Volunteer"<?php if ($formdata['employed'] == 'Volunteer') { print ' checked="checked"'; } ?> /> Volunteer
+							<input type="radio" name="employed" id="employed_fulltime" value="Full-Time" checked= "checked"/> Full-Time &nbsp;&nbsp;&nbsp; 
+							<input type="radio" name="employed" id="employed_parttime" value="Part-Time" /> Part-Time &nbsp;&nbsp;&nbsp;
+							<input type="radio" name="employed" id="employed_seasonal" value="Seasonal" /> Seasonal &nbsp;&nbsp;&nbsp;
+							<input type="radio" name="employed" id="employed_volunteer" value="Volunteer" /> Volunteer
 						</div>
 					</div>
 					<div style="clear:both"></div>
 					<div class="col-lg-12">
 					<div class="form-group col-lg-4">
 						<label for="workDaysPerWeek" class="skier-label">Avg. Days Worked/ week</label>
-						<input type="text" name="workDaysPerWeek" id="workDaysPerWeek" class="input-lg form-control skier-input-two" placeholder="Days staff works per week" autocomplete="off" value="<?= $formdata['workDaysPerWeek'] ?>" />
+						<input type="text" name="workDaysPerWeek" id="workDaysPerWeek" class="input-lg form-control skier-input-two" placeholder="Days staff works per week" autocomplete="off" value="" />
 					</div>
 					<div class="form-group col-lg-4">
 						<label for="avgEarningsPerWeek" class="skier-label">Avg. Weekly Earnings</label>
-						<input type="text" name="avgEarningsPerWeek" id="avgEarningsPerWeek" class="input-lg form-control skier-input-two" placeholder="Avg. Weekly Earnings" autocomplete="off" value="<?= $formdata['avgEarningsPerWeek'] ?>" />
+						<input type="text" name="avgEarningsPerWeek" id="avgEarningsPerWeek" class="input-lg form-control skier-input-two" placeholder="Avg. Weekly Earnings" autocomplete="off" value="" />
 					</div>
 					<div class="form-group col-lg-4">
 						<label for="numDependents" class="skier-label">Num. of Dependents</label>
-						<input type="text" name="numDependents" id="numDependents" class="input-lg form-control skier-input-two" placeholder="Number of dependents" autocomplete="off" value="<?= $formdata['numDependents'] ?>" />
+						<input type="text" name="numDependents" id="numDependents" class="input-lg form-control skier-input-two" placeholder="Number of dependents" autocomplete="off" value="" />
 					</div>
 					<div style="clear:both"></div>
 					<div class="col-lg-12">
 					<div class="form-group col-lg-12">
 						<label for="notes" class="skier-label">Additional Notes or Comments:</label>
-						<textarea name="notes" id="notes" class="input-lg form-control skier-input-two" placeholder="Additional Notes or Comments" rows="3"><?= $formdata['notes'] ?></textarea>
+						<textarea name="notes" id="notes" class="input-lg form-control skier-input-two" placeholder="Additional Notes or Comments" rows="3"></textarea>
 					</div>
 					<div class="form-group col-lg-12">
 						<label for="campMedicalCare" class="skier-label">Did camp provide medical care?</label>
-						<div><input type="radio" name="campMedicalCare" id="campMedicalCare_yes" value="Yes"<?php //if ($formdata['campMedicalCare'] == 'Yes') { print ' checked="checked"'; } ?> /> Yes &nbsp;
-							<input type="radio" name="campMedicalCare" id="campMedicalCare_no" value="No"<?php //if ($formdata['campMedicalCare'] == 'No') { print ' checked="checked"'; } ?> /> No
+						<div><input type="radio" name="campMedicalCare" id="campMedicalCare_yes" value="Yes" /> Yes &nbsp;
+							<input type="radio" name="campMedicalCare" id="campMedicalCare_no" value="No" checked="checked"/> No
 						</div>
 					</div>
 					<div style="clear:both"></div>
@@ -854,7 +874,7 @@ function goDashboard() {
 				<div class="col-lg-12">
 					<div class="form-group col-lg-12">
 						<label for="campMedicalCareDetail" class="skier-label">If camp provided medical care, please explain and provide date of care:</label>
-						<textarea name="campMedicalCareDetail" id="campMedicalCareDetail" class="input-lg form-control skier-input-two" placeholder="If camp provided medical care, please explain and provide date of care" rows="3"><?= $formdata['campMedicalCareDetail'] ?></textarea>
+						<textarea name="campMedicalCareDetail" id="campMedicalCareDetail" class="input-lg form-control skier-input-two" placeholder="If camp provided medical care, please explain and provide date of care" rows="3"></textarea>
 					</div>
 				</div>
 				</div>
@@ -880,19 +900,18 @@ function goDashboard() {
 		
 					<div class="form-group col-lg-3">
 						<label for="sb_firstName" class="skier-label">First Name</label>
-						<input type="text" name="sb_firstName" id="sb_firstName" class="input-lg form-control skier-input-two" placeholder="First Name" autocomplete="off" value="<?= $formdata['sb_firstName'] ?>" />
+						<input type="text" name="sb_firstName" id="sb_firstName" class="input-lg form-control skier-input-two" placeholder="First Name" autocomplete="off" value="" />
 						
 					</div>
 					<div class="form-group col-lg-3">
 						<label for="sb_lastName" class="skier-label">Last Name</label>
-						<input type="text" name="sb_lastName" id="sb_lastName" class="input-lg form-control skier-input-two" placeholder="Last Name" autocomplete="off" value="<?= $formdata['sb_lastName'] ?>" />
+						<input type="text" name="sb_lastName" id="sb_lastName" class="input-lg form-control skier-input-two" placeholder="Last Name" autocomplete="off" value="" />
 					</div>
 					<div class="form-group col-lg-6">
 						<label for="sb_title" class="skier-label">Title</label>
-						<input type="text" name="sb_title" id="sb_title" class="input-lg form-control skier-input-two" placeholder="Title" autocomplete="off" value="<?= $formdata['sb_title'] ?>" />
+						<input type="text" name="sb_title" id="sb_title" class="input-lg form-control skier-input-two" placeholder="Title" autocomplete="off" value="" />
 					</div>
-					<button type="submit" class="btn btn-primary skier-button" name="submitFinal">Submit</button>
-					<button id='printToPDF'>Print to PDF</button>
+					<button class="btn btn-primary skier-button" name="submitFinal">Submit</button>
 				
 					
 				<div class="col-lg-12">
@@ -923,116 +942,12 @@ function goDashboard() {
 
 <!-- <?php include("../includes/amskier-footer.php"); ?> -->
 <script src='../includes/gb.js'></script>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
-
-
 <script>
-
-let oldData;
-// let puts = document.querySelectorAll('input')
-async function fetchAndProcessData() {
-	try{
-		const res = await fetch('./includes/getData.php');
-    const response = await res.json();
-    // console.log(response);
-    // puts.forEach((input, index) => {
-    //         let theId = input.id
-    //         console.log(theId)
-    //     input.value = response[input];
-    //     if (input.value !== '') {
-    //         // input.disabled = true;
-    //     }
-    // });
-
-	oldData = response
-	} catch{
-		console.log('error')
-	}
-
-}
-
-fetchAndProcessData();
-	const data = [
-		
-];
-
-let printToPDF = document.getElementById('printToPDF').addEventListener('click', (e)=> {
-	e.preventDefault()
-	generatePDF(oldData)
-})
-// generatePDF(data);
-
-function generatePDF(data) {
-	console.log(data)
-  // create a new jsPDF instance
-  const doc = new jsPDF();
-
-  // set initial page number
-  let pageNumber = 1;
-
-  // loop through the data and add it to the PDF document
-
-  for (const item of data) {
-	// console.log(item)
-    // add a new page if needed
-    if (pageNumber > 1) {
-      doc.addPage();
+    function thankAndReload(){
+        alert("Claim submitted!");
+        window.location.reload();
     }
 
-    // add the item to the PDF document
-    doc.text(`AMSkier Worker's Compensation Claim`, 60, 10);
-	doc.line(10,12, 200, 12)
-    doc.text(`Injured Person's Information`, 70, 20);
-	doc.line(65,22, 145, 22)
-
-    doc.text(`First Name: ${item.EEFirstName}`, 10, 30);
-    doc.text(`Last Name: ${item.EELastName}`, 80, 30);
-	if(item.EEMarried === 0){
-		doc.text(`Married: No`, 10, 40);
-	} else {
-		doc.text(`Married: Yes`, 10, 40);
-	}
-
-	if(item.EEMale === '0'){
-		doc.text(`Sex: Female`, 80, 40)
-	} else if (item.EEMale === 1){
-		doc.text(`Sex: Male`, 80, 40);
-	}
-	
-	let newMonth = item.EEDOB.slice(5,7)
-	let newDay = item.EEDOB.slice(8,10)
-	let newYear = item.EEDOB.slice(0,4)
-	doc.text(`Date of Birth: ${newMonth}/${newDay}/${newYear}`, 10, 50)
-	doc.text(`SSN: ${item.EESocial}`, 80, 50)
-	if(item.StaffIntl === '1'){
-		doc.text(`International Staff: Yes`, 130, 50)
-	} else if(StaffIntl === '0'){
-		doc.text(`International Staff: No`, 130, 50)
-	}
-	if(item.IntStaffAgency === ''){
-		doc.text(`International Staffing Agency: N/A`, 10, 60)
-	} else {
-		doc.text(`International Staffing Agency: ${item.IntStaffAgency}`, 10, 60)
-	}
-
-	doc.text(`Address: ${item.EEAddress}`, 10, 70)
-	doc.text(`City: ${item.EECity}`, 10, 80)
-	doc.text(`State: ${item.EEState}`, 80, 80)
-	doc.text(`Zip: ${item.EEZip}`, 130, 80)
-	doc.text(`Phone: ${item.EEPhone}`, 10, 90)
-	doc.line(10,92, 200, 92)
-	doc.text(`Accident Information`, 80, 100);
-	doc.line(65,102, 145, 102)
-
-    // increment page number
-    pageNumber++;
-  }
-
-  // save the PDF document
-  doc.save(`AMSkier - ${data[0].CampName} Worker's Comp Claim ${data[0].EEFirstName} ${data[0].EELastName}.pdf`);
-}
 </script>
-<!-- Latest compiled and minified JavaScript -->
 </body>
 </html>
