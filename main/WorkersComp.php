@@ -891,8 +891,13 @@ function goDashboard() {
 						<label for="sb_title" class="skier-label">Title</label>
 						<input type="text" name="sb_title" id="sb_title" class="input-lg form-control skier-input-two" placeholder="Title" autocomplete="off" value="<?= $formdata['sb_title'] ?>" />
 					</div>
-					<button type="submit" class="btn btn-primary skier-button" name="submitFinal">Submit</button>
-					<button id='printToPDF'>Print to PDF</button>
+					<div class="form-group col-lg-12">
+					<input type="checkbox" name="downloadPDF" id="downloadPDF">
+
+						<label for="downloadPDF"> &nbsp Check if you would like to download a PDF for you records</label>
+					</div>
+					<button type="submit" id="finalSubmission" class="btn btn-primary skier-button" name="submitFinal">Submit</button>
+					<!-- <button id='printToPDF'>Print to PDF</button> -->
 				
 					
 				<div class="col-lg-12">
@@ -911,7 +916,7 @@ function goDashboard() {
 	            We are processing your Workers Comp Report. A representative will be in touch with you shortly.
 	        </div>
 	        <div style="text-align:center; margin-top:40px;">
-	            <button type="button" class="btn btn-primary skier-button" onclick="goDashboard()"><span>Return to Dashboard</span></button>
+	            <button type="button" class="btn btn-primary skier-button" id='finalSubmission' onclick="goDashboard()"><span>Return to Dashboard</span></button>
 	        </div>
 			</form>
 		</div>
@@ -927,112 +932,7 @@ function goDashboard() {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
 
 
-<script>
-
-let oldData;
-// let puts = document.querySelectorAll('input')
-async function fetchAndProcessData() {
-	try{
-		const res = await fetch('./includes/getData.php');
-    const response = await res.json();
-    // console.log(response);
-    // puts.forEach((input, index) => {
-    //         let theId = input.id
-    //         console.log(theId)
-    //     input.value = response[input];
-    //     if (input.value !== '') {
-    //         // input.disabled = true;
-    //     }
-    // });
-
-	oldData = response
-	} catch{
-		console.log('error')
-	}
-
-}
-
-fetchAndProcessData();
-	const data = [
-		
-];
-
-let printToPDF = document.getElementById('printToPDF').addEventListener('click', (e)=> {
-	e.preventDefault()
-	generatePDF(oldData)
-})
-// generatePDF(data);
-
-function generatePDF(data) {
-	console.log(data)
-  // create a new jsPDF instance
-  const doc = new jsPDF();
-
-  // set initial page number
-  let pageNumber = 1;
-
-  // loop through the data and add it to the PDF document
-
-  for (const item of data) {
-	// console.log(item)
-    // add a new page if needed
-    if (pageNumber > 1) {
-      doc.addPage();
-    }
-
-    // add the item to the PDF document
-    doc.text(`AMSkier Worker's Compensation Claim`, 60, 10);
-	doc.line(10,12, 200, 12)
-    doc.text(`Injured Person's Information`, 70, 20);
-	doc.line(65,22, 145, 22)
-
-    doc.text(`First Name: ${item.EEFirstName}`, 10, 30);
-    doc.text(`Last Name: ${item.EELastName}`, 80, 30);
-	if(item.EEMarried === 0){
-		doc.text(`Married: No`, 10, 40);
-	} else {
-		doc.text(`Married: Yes`, 10, 40);
-	}
-
-	if(item.EEMale === '0'){
-		doc.text(`Sex: Female`, 80, 40)
-	} else if (item.EEMale === 1){
-		doc.text(`Sex: Male`, 80, 40);
-	}
-	
-	let newMonth = item.EEDOB.slice(5,7)
-	let newDay = item.EEDOB.slice(8,10)
-	let newYear = item.EEDOB.slice(0,4)
-	doc.text(`Date of Birth: ${newMonth}/${newDay}/${newYear}`, 10, 50)
-	doc.text(`SSN: ${item.EESocial}`, 80, 50)
-	if(item.StaffIntl === '1'){
-		doc.text(`International Staff: Yes`, 130, 50)
-	} else if(StaffIntl === '0'){
-		doc.text(`International Staff: No`, 130, 50)
-	}
-	if(item.IntStaffAgency === ''){
-		doc.text(`International Staffing Agency: N/A`, 10, 60)
-	} else {
-		doc.text(`International Staffing Agency: ${item.IntStaffAgency}`, 10, 60)
-	}
-
-	doc.text(`Address: ${item.EEAddress}`, 10, 70)
-	doc.text(`City: ${item.EECity}`, 10, 80)
-	doc.text(`State: ${item.EEState}`, 80, 80)
-	doc.text(`Zip: ${item.EEZip}`, 130, 80)
-	doc.text(`Phone: ${item.EEPhone}`, 10, 90)
-	doc.line(10,92, 200, 92)
-	doc.text(`Accident Information`, 80, 100);
-	doc.line(65,102, 145, 102)
-
-    // increment page number
-    pageNumber++;
-  }
-
-  // save the PDF document
-  doc.save(`AMSkier - ${data[0].CampName} Worker's Comp Claim ${data[0].EEFirstName} ${data[0].EELastName}.pdf`);
-}
-</script>
+<script src='./includes/pdf.js'></script>
 <!-- Latest compiled and minified JavaScript -->
 </body>
 </html>

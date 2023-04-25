@@ -7,7 +7,7 @@ if(!$conn){
 }
 
 
-    $sql = "SELECT * FROM dbo_claimswc WHERE ClaimsWCID = 3420;";
+    $sql = "SELECT * FROM dbo_claimswc WHERE ClaimsWCID = 3422;";
     $result = mysqli_query($conn, $sql);
 $data = [];
 while($row = mysqli_fetch_assoc($result)){
