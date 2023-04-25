@@ -2,6 +2,7 @@
 
 $conn = mysqli_connect('localhost', 'root', '', 'amskier');
 
+
 if(!$conn){
     die('Connection failed!');
 }

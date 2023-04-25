@@ -304,7 +304,7 @@ function goDashboard() {
 
 
 	<div id="main_content">
-	<form action="./submitSuccessful.php" method="POST">			
+	<form action="./submitted.php" method="POST">			
 					<!------------------------------------------------------------------------------------Navbar ------------------------------------------------------------------------------------------->
 	<nav class="navbar navbar-default" >
   	<div class="container-fluid" >
@@ -892,8 +892,7 @@ function goDashboard() {
 						<input type="text" name="sb_title" id="sb_title" class="input-lg form-control skier-input-two" placeholder="Title" autocomplete="off" value="<?= $formdata['sb_title'] ?>" />
 					</div>
 					<div class="form-group col-lg-12">
-					<input type="checkbox" name="downloadPDF" id="downloadPDF">
-
+						<input type="checkbox" name="downloadPDF" id="downloadPDF" value="1">
 						<label for="downloadPDF"> &nbsp Check if you would like to download a PDF for you records</label>
 					</div>
 					<button type="submit" id="finalSubmission" class="btn btn-primary skier-button" name="submitFinal">Submit</button>
@@ -932,7 +931,7 @@ function goDashboard() {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
 
 
-<script src='./includes/pdf.js'></script>
+<!-- <script src='./includes/pdf.js'></script> -->
 <!-- Latest compiled and minified JavaScript -->
 </body>
 </html>

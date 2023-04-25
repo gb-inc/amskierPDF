@@ -11,7 +11,7 @@ $data = array(
 $jsonString = json_encode($data);
 
 // Call the pdfgen.exe executable with the JSON data and HTML template as arguments
-$command = "./pdfgen.exe '{$jsonString}' gotest.gohtml";
+$command = ".\pdfgen.exe -templatep '{$jsonString}' gotest.gohtml";
 $output = shell_exec($command);
 
 // The generated PDF should be in the $output variable
